@@ -10,6 +10,7 @@ import Tasks from "@/page/workspace/Tasks";
 import { AUTH_ROUTES, BASE_ROUTE, PROTECTED_ROUTES } from "./routePaths";
 import InviteUser from "@/page/invite/InviteUser";
 import Calendar from "@/page/workspace/Calendar";
+import Chat from "@/page/workspace/Chat";
 
 export const publicRoutePaths = [
   {
@@ -28,6 +29,7 @@ export const protectedRoutePaths = [
   { path: PROTECTED_ROUTES.WORKSPACE, element: <WorkspaceDashboard /> },
   { path: PROTECTED_ROUTES.TASKS, element: <Tasks /> },
   { path: PROTECTED_ROUTES.CALENDAR, element: <Calendar /> },
+  { path: PROTECTED_ROUTES.CHAT, element: <Chat /> },
   { path: PROTECTED_ROUTES.MEMBERS, element: <Members /> },
   { path: PROTECTED_ROUTES.SETTINGS, element: <Settings /> },
   { path: PROTECTED_ROUTES.PROJECT_DETAILS, element: <ProjectDetails /> },

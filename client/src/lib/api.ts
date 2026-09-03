@@ -283,3 +283,32 @@ export const getCalendarTasksQueryFn = async ({
 
   return response.data;
 };
+
+export const getMessagesQueryFn = async ({
+  workspaceId,
+}: {
+  workspaceId: string;
+}) => {
+  const response = await API.get(
+    `/message/workspace/${workspaceId}`
+  );
+
+  return response.data;
+};
+
+export const createMessageMutationFn = async ({
+  workspaceId,
+  content,
+}: {
+  workspaceId: string;
+  content: string;
+}) => {
+  const response = await API.post(
+    `/message/workspace/${workspaceId}`,
+    {
+      content,
+    }
+  );
+
+  return response.data;
+};

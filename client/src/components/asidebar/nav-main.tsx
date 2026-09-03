@@ -7,6 +7,7 @@ import {
   CheckCircle,
   LayoutDashboard,
   CalendarDays,
+  MessageCircle,
 } from "lucide-react";
 import {
   SidebarGroup,
@@ -53,6 +54,12 @@ export function NavMain() {
       url: `/workspace/${workspaceId}/calendar`,
       icon: CalendarDays,
     },
+    {
+      title: "Chat",
+      url: `/workspace/${workspaceId}/chat`,
+      icon: MessageCircle,
+    },
+
     {
       title: "Members",
       url: `/workspace/${workspaceId}/members`,

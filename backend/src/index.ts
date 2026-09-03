@@ -9,7 +9,8 @@ import { HTTPSTATUS } from "./config/http.config";
 import { asyncHandler } from "./middlewares/asyncHandler.middleware";
 import { BadRequestException } from "./utils/appError";
 import { ErrorCodeEnum } from "./enums/error-code.enum";
-
+import { createServer } from "http";
+import { initializeSocket } from "./socket";
 import "./config/passport.config";
 import passport from "passport";
 import authRoutes from "./routes/auth.route";
@@ -19,6 +20,7 @@ import workspaceRoutes from "./routes/workspace.route";
 import memberRoutes from "./routes/member.route";
 import projectRoutes from "./routes/project.route";
 import taskRoutes from "./routes/task.route";
+import messageRoutes from "./routes/message.route";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -67,10 +69,14 @@ app.use(`${BASE_PATH}/workspace`, isAuthenticated, workspaceRoutes);
 app.use(`${BASE_PATH}/member`, isAuthenticated, memberRoutes);
 app.use(`${BASE_PATH}/project`, isAuthenticated, projectRoutes);
 app.use(`${BASE_PATH}/task`, isAuthenticated, taskRoutes);
+app.use(`${BASE_PATH}/message`, isAuthenticated, messageRoutes);
 
 app.use(errorHandler);
 
-app.listen(config.PORT, async () => {
+const httpServer = createServer(app);
+initializeSocket(httpServer);
+
+httpServer.listen(config.PORT, async () => {
   console.log(`Server listening on port ${config.PORT} in ${config.NODE_ENV}`);
   await connectDatabase();
 });
