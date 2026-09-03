@@ -261,3 +261,25 @@ export const deleteTaskMutationFn = async ({
   );
   return response.data;
 };
+
+export const getCalendarTasksQueryFn = async ({
+  workspaceId,
+  startDate,
+  endDate,
+}: {
+  workspaceId: string;
+  startDate: string;
+  endDate: string;
+}) => {
+  const response = await API.get(
+    `/task/workspace/${workspaceId}/calendar`,
+    {
+      params: {
+        startDate,
+        endDate,
+      },
+    }
+  );
+
+  return response.data;
+};

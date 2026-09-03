@@ -16,8 +16,10 @@ import {
   getAllTasksService,
   getTaskByIdService,
   updateTaskService,
+  getCalendarTasksService,
 } from "../services/task.service";
 import { HTTPSTATUS } from "../config/http.config";
+import { z } from "zod";
 
 export const createTaskController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -143,6 +145,25 @@ export const deleteTaskController = asyncHandler(
 
     return res.status(HTTPSTATUS.OK).json({
       message: "Task deleted successfully",
+    });
+  }
+);
+
+export const getCalendarTasksController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const workspaceId = z.string().parse(req.params.workspaceId);
+
+    const startDate = z.string().parse(req.query.startDate);
+    const endDate = z.string().parse(req.query.endDate);
+
+    const tasks = await getCalendarTasksService(
+      workspaceId,
+      startDate,
+      endDate
+    );
+
+    return res.status(HTTPSTATUS.OK).json({
+      tasks,
     });
   }
 );

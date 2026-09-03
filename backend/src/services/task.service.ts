@@ -213,3 +213,22 @@ export const deleteTaskService = async (
 
   return;
 };
+
+export const getCalendarTasksService = async (
+  workspaceId: string,
+  startDate: string,
+  endDate: string
+) => {
+  const tasks = await TaskModel.find({
+    workspace: workspaceId,
+    dueDate: {
+      $gte: new Date(startDate),
+      $lt: new Date(endDate),
+    },
+  })
+    .populate("project", "_id name emoji")
+    .populate("assignedTo", "_id name profilePicture")
+    .sort({ dueDate: 1 });
+
+  return tasks;
+};
