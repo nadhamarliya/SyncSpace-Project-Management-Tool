@@ -15,9 +15,15 @@ export const createTaskService = async (
     status: string;
     assignedTo?: string | null;
     dueDate?: string;
+    attachments?: {
+    name: string;
+    url: string;
+    type: string;
+    size: number;
+  }[];
   }
 ) => {
-  const { title, description, priority, status, assignedTo, dueDate } = body;
+  const { title, description, priority, status, assignedTo, dueDate, attachments, } = body;
 
   const project = await ProjectModel.findById(projectId);
 
@@ -46,6 +52,7 @@ export const createTaskService = async (
     workspace: workspaceId,
     project: projectId,
     dueDate,
+    attachments: attachments || [],
   });
 
   await task.save();
@@ -64,6 +71,12 @@ export const updateTaskService = async (
     status: string;
     assignedTo?: string | null;
     dueDate?: string;
+    attachments?: {
+    name: string;
+    url: string;
+    type: string;
+    size: number;
+  }[];
   }
 ) => {
   const project = await ProjectModel.findById(projectId);

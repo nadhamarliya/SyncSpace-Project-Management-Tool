@@ -223,11 +223,11 @@ export type CreateTaskPayloadType = {
     status: TaskStatusEnumType;
     assignedTo: string;
     dueDate: string;
+    attachments: TaskAttachmentType[];
   };
 };
 
 
-//added new for edtiting of task
 export type EditTaskPayloadType = {
   taskId: string;
   workspaceId: string;
@@ -239,9 +239,16 @@ export type EditTaskPayloadType = {
     status: TaskStatusEnumType;
     assignedTo: string;
     dueDate: string;
+    attachments: TaskAttachmentType[];
   }>;
 };
 
+export type TaskAttachmentType = {
+  name: string;
+  url: string;
+  type: string;
+  size: number;
+};
 
 export type TaskType = {
   _id: string;
@@ -264,6 +271,8 @@ export type TaskType = {
   taskCode: string;
   createdAt?: string;
   updatedAt?: string;
+
+  attachments: TaskAttachmentType[];
 };
 
 export type AllTaskPayloadType = {
@@ -282,4 +291,12 @@ export type AllTaskResponseType = {
   message: string;
   tasks: TaskType[];
   pagination: PaginationType;
+};
+
+export type ChatAIPayloadType = {
+  message: string;
+};
+
+export type ChatAIResponseType = {
+  message: string;
 };

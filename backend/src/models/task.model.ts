@@ -5,7 +5,15 @@ import {
   TaskStatusEnum,
   TaskStatusEnumType,
 } from "../enums/task.enum";
+
 import { generateTaskCode } from "../utils/uuid";
+
+export interface TaskAttachment {
+  name: string;
+  url: string;
+  type: string;
+  size: number;
+}
 
 export interface TaskDocument extends Document {
   taskCode: string;
@@ -18,6 +26,9 @@ export interface TaskDocument extends Document {
   assignedTo: mongoose.Types.ObjectId | null;
   createdBy: mongoose.Types.ObjectId;
   dueDate: Date | null;
+
+  attachments: TaskAttachment[];
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -73,6 +84,30 @@ const taskSchema = new Schema<TaskDocument>(
       type: Date,
       default: null,
     },
+
+attachments: {
+  type: [
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
+      type: {
+        type: String,
+        required: true,
+      },
+      size: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
+  default: [],
+},
   },
   {
     timestamps: true,

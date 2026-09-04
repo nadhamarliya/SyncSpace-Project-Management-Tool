@@ -14,6 +14,8 @@ import {
   EditProjectPayloadType,
   ProjectByIdPayloadType,
   ProjectResponseType,
+  ChatAIPayloadType,
+  ChatAIResponseType,
 } from "../types/api.type";
 import {
   AllWorkspaceResponseType,
@@ -205,6 +207,20 @@ export const createTaskMutationFn = async ({
   return response.data;
 };
 
+export const uploadFileMutationFn = async (file: File) => {
+  const formData = new FormData();
+
+  formData.append("file", file);
+
+  const response = await API.post("/file/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+};
+
 
 export const editTaskMutationFn = async ({
   taskId,
@@ -310,5 +326,12 @@ export const createMessageMutationFn = async ({
     }
   );
 
+  return response.data;
+};
+
+export const chatAIMutationFn = async (
+  data: ChatAIPayloadType
+): Promise<ChatAIResponseType> => {
+  const response = await API.post("/ai/chat", data);
   return response.data;
 };

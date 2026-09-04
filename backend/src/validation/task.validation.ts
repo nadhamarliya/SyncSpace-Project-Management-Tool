@@ -29,6 +29,13 @@ export const dueDateSchema = z
 
 export const taskIdSchema = z.string().trim().min(1);
 
+export const attachmentSchema = z.object({
+  name: z.string().min(1),
+  url: z.string().url(),
+  type: z.string().min(1),
+  size: z.number().nonnegative(),
+});
+
 export const createTaskSchema = z.object({
   title: titleSchema,
   description: descriptionSchema,
@@ -36,6 +43,8 @@ export const createTaskSchema = z.object({
   status: statusSchema,
   assignedTo: assignedToSchema,
   dueDate: dueDateSchema,
+
+  attachments: z.array(attachmentSchema).optional(),
 });
 
 export const updateTaskSchema = z.object({

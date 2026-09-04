@@ -2,6 +2,7 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { CalendarIcon, Loader } from "lucide-react";
 import {
   Form,
@@ -38,7 +39,7 @@ import { TaskPriorityEnum, TaskStatusEnum } from "@/constant";
 import useGetProjectsInWorkspaceQuery from "@/hooks/api/use-get-projects";
 import useGetWorkspaceMembers from "@/hooks/api/use-get-workspace-members";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createTaskMutationFn } from "@/lib/api";
+import { createTaskMutationFn, uploadFileMutationFn } from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 
@@ -50,6 +51,8 @@ export default function CreateTaskForm(props: {
 
   const queryClient = useQueryClient();
   const workspaceId = useWorkspaceId();
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: createTaskMutationFn,
@@ -141,14 +144,24 @@ export default function CreateTaskForm(props: {
   const statusOptions = transformOptions(taskStatusList);
   const priorityOptions = transformOptions(taskPriorityList);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (isPending) return;
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  if (isPending) return;
+
+  try {
+    // Upload selected files first
+    const uploadedFiles = await Promise.all(
+      selectedFiles.map((file) => uploadFileMutationFn(file))
+    );
+
+    const attachments = uploadedFiles.map((result) => result.file);
+
     const payload = {
       workspaceId,
       projectId: values.projectId,
       data: {
         ...values,
         dueDate: values.dueDate.toISOString(),
+        attachments,
       },
     };
 
@@ -167,8 +180,11 @@ export default function CreateTaskForm(props: {
           description: "Task created successfully",
           variant: "success",
         });
+
+        setSelectedFiles([]);
         onClose();
       },
+
       onError: (error) => {
         toast({
           title: "Error",
@@ -177,7 +193,16 @@ export default function CreateTaskForm(props: {
         });
       },
     });
-  };
+  } catch (error) {
+    console.error("File upload failed:", error);
+
+    toast({
+      title: "File upload failed",
+      description: "Could not upload one or more files.",
+      variant: "destructive",
+    });
+  }
+};
 
   return (
     <div className="w-full h-auto max-w-full">
@@ -237,6 +262,81 @@ export default function CreateTaskForm(props: {
                 )}
               />
             </div>
+
+            {/* Attach Files */}
+<div className="space-y-2">
+  <FormLabel>Attachments</FormLabel>
+
+  <label
+    htmlFor="task-files"
+    className="flex cursor-pointer items-center justify-center rounded-md border border-dashed p-4 text-sm text-muted-foreground transition hover:bg-muted/50"
+  >
+    📎 Click to add files
+  </label>
+
+  <input
+    id="task-files"
+    type="file"
+    multiple
+    className="hidden"
+    accept="
+      image/jpeg,
+      image/png,
+      image/gif,
+      image/webp,
+      application/pdf,
+      application/msword,
+      application/vnd.openxmlformats-officedocument.wordprocessingml.document,
+      application/vnd.ms-excel,
+      application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+      text/plain,
+      application/zip,
+      application/x-zip-compressed
+    "
+    onChange={(e) => {
+      const files = Array.from(e.target.files || []);
+
+      setSelectedFiles((prev) => [...prev, ...files]);
+
+      e.target.value = "";
+    }}
+  />
+
+  {selectedFiles.length > 0 && (
+    <div className="space-y-2">
+      {selectedFiles.map((file, index) => (
+        <div
+          key={`${file.name}-${index}`}
+          className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
+        >
+          <div className="flex min-w-0 items-center gap-2">
+            <span>📎</span>
+
+            <span className="truncate">
+              {file.name}
+            </span>
+
+            <span className="text-xs text-muted-foreground">
+              {(file.size / 1024 / 1024).toFixed(2)} MB
+            </span>
+          </div>
+
+          <button
+            type="button"
+            className="ml-2 text-sm text-destructive"
+            onClick={() => {
+              setSelectedFiles((prev) =>
+                prev.filter((_, i) => i !== index)
+              );
+            }}
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+    </div>
+  )}
+</div>
 
             {/* {ProjectId} */}
 

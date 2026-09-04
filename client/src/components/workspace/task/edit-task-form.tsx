@@ -2,7 +2,8 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { CalendarIcon, Loader } from "lucide-react";
+import { useState } from "react";
+import { CalendarIcon, Loader, File, X} from "lucide-react";
 import {
   Form,
   FormControl,
@@ -38,6 +39,8 @@ import { TaskType } from "@/types/api.type";
 export default function EditTaskForm({ task, onClose }: { task: TaskType; onClose: () => void }) {
   const queryClient = useQueryClient();
   const workspaceId = useWorkspaceId();
+
+  const [attachments, setAttachments] = useState(task.attachments || []);
 
   const { mutate, isPending } = useMutation({
     mutationFn: editTaskMutationFn,
@@ -94,6 +97,7 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
       data: {
         ...values,
         dueDate: values.dueDate.toISOString(),
+        attachments,
       },
     };
 
@@ -213,6 +217,62 @@ export default function EditTaskForm({ task, onClose }: { task: TaskType; onClos
                 <FormMessage />
               </FormItem>
             )} />
+
+            {/* Attachments */}
+{attachments.length > 0 && (
+  <div className="space-y-2">
+    <FormLabel>Attachments</FormLabel>
+
+    <div className="space-y-2">
+      {attachments.map((file) => (
+        <div
+          key={file.url}
+          className="flex items-center justify-between rounded-md border p-3"
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => {
+                setAttachments((prev) =>
+                  prev.filter((attachment) => attachment.url !== file.url)
+                );
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <File className="h-5 w-5 shrink-0 text-muted-foreground" />
+
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">
+                {file.name}
+              </p>
+
+              <p className="text-xs text-muted-foreground">
+                {(file.size / 1024).toFixed(1)} KB
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <a
+              href={file.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium underline"
+            >
+              Open
+            </a>
+
+            
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
             <Button type="submit" className="w-full" disabled={isPending}>
               {isPending && <Loader className="animate-spin" />}

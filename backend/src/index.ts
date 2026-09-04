@@ -21,7 +21,9 @@ import memberRoutes from "./routes/member.route";
 import projectRoutes from "./routes/project.route";
 import taskRoutes from "./routes/task.route";
 import messageRoutes from "./routes/message.route";
-
+import fileRoutes from "./routes/file.route";
+import aiRoutes from "./routes/ai.route";
+console.log("🔥 AI ROUTE IMPORTED");
 const app = express();
 const BASE_PATH = config.BASE_PATH;
 
@@ -70,8 +72,10 @@ app.use(`${BASE_PATH}/member`, isAuthenticated, memberRoutes);
 app.use(`${BASE_PATH}/project`, isAuthenticated, projectRoutes);
 app.use(`${BASE_PATH}/task`, isAuthenticated, taskRoutes);
 app.use(`${BASE_PATH}/message`, isAuthenticated, messageRoutes);
-
+app.use(`${BASE_PATH}/file`, isAuthenticated, fileRoutes);
+app.use(`${BASE_PATH}/ai`, isAuthenticated, aiRoutes);
 app.use(errorHandler);
+
 
 const httpServer = createServer(app);
 initializeSocket(httpServer);
